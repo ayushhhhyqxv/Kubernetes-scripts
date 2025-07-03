@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod # necessary
+metadata:
+  name:<my-pod-name>
+  namespace:<your-created-name>
+spec:
+  containers:
+    - name: <your-container-name>
+      image: <docker-hub-img-tag-link>:latest
+      ports: 
+        - containerPort: <yours-app-open-port>
+    - name: <new-container>
+      image: <image-tag>
+      ports:
+        - containerPort:
+        <new-apps-port>
