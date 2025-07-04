@@ -1,0 +1,26 @@
+# A Kubernetes Deployment YAML file defines the desired state for your application in a Kubernetes cluster. and specifies details like the number of replicas, container images, and resource limits and allows Kubernetes to manage and automate the deployment, scaling, and updates of your application
+
+# Since pod cant auto-heal itself once it dies just like docker container so comes deployment file 
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: <namespace-you-want-to-add-in>
+  name: <random-your-app-name>
+  labels:
+    app: <say-django>   # Selector match label and labels of metadata should be same for mapping purposes,first spec is itself the contract of deployment file 
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: <say-django>
+  template:
+    metadata:
+      labels:
+        app: <say-django>
+    spec:
+      containers:
+      - name: <give-container-name>
+        image: <image-of-your-app>
+        ports:
+        - containerPort: <port-number>
