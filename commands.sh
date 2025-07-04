@@ -42,5 +42,21 @@ kubectl delete -f pod.yaml  # to delete the entire pod,it does not delete the fi
 
 # Adding more containers to a single pod 
 
+# Further more add deployment file and replicas you want 
 
+kubectl apply -f deployment.yaml
+
+kubectl get pods --namespace=<your-namespace> # You can see your pods running along with replicas !
+
+# Try auto heal thing 
+
+kubectl delete pods <random-pod-name-and-id>
+
+kubectl get pods --namespace=<your-namespace> # You will see your pod auto-heal and recreated
+
+# To permanently delete your pod , delete the yaml file config ie 
+
+kubectl delete -f deployment.yaml
+
+# Check for pods again you wont find now !
 
