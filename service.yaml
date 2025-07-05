@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service # choses type as clusterip if not mentioned 
+metadata:
+  name: <service-name>
+spec:
+  selector:
+    app: <say-django>     # use same as in deployment file
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376 # porting all containers port to a common port !
