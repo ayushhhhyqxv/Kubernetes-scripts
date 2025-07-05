@@ -7,5 +7,5 @@ spec:
     app: <say-django>     # use same as in deployment file
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 9376 # porting all containers port to a common port !
+      port: 3600 # porting all containers port to a common port !
+      targetPort: 8001 

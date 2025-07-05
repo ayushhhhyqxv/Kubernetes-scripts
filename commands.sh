@@ -66,9 +66,28 @@ kubectl delete -f deployment.yaml
 
 kubectl apply -f service.yaml
 
-minikube service <service-name> -n <name-space> # Will get you all the URLS/Port related to that OR
+minikube service <service-name> -n <name-space> --url # Will get you all the URLS/Port related to that OR
 
 kubectl get svc -n <name-space> # will show services in that specified name space
 
 curl -L <url> # redirects to the url on which app is running ! 
+
+# This whole setup is in local,to view on browser create ngrok account
+
+# in your main server,create a directory for ngrok and inside that 
+# install ngrok and authenticate yourself
+
+ngrok http <url-of-service> # This creates a tunnel btw local and global and is represented on server shown ny ngrok
+
+# Now comes ingress comes if you want to bind service to a domain
+
+kubectl apply -f ingress.yaml
+
+# Now for example i am binding clusterIP to service
+
+sudo vim /etc/hosts # inside that bind 
+
+<clusterIP> <domain-name/url-mentioned-in-service> # binds local cluster to global domain 
+
+curl -L http://<domain-name/url-mentioned-in-service> 
 

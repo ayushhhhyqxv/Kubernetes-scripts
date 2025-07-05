@@ -23,4 +23,4 @@ spec:
       - name: <give-container-name>
         image: <image-of-your-app>
         ports:
-        - containerPort: <port-number>
+        - containerPort: <port-number> #should be same as service.yaml else hell lot of errors you would get stuck on!
