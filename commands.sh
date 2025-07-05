@@ -50,7 +50,7 @@ kubectl get pods --namespace=<your-namespace> # You can see your pods running al
 
 # Try auto heal thing 
 
-kubectl delete pods <random-pod-name-and-id>
+kubectl delete pods <random-pod-name-and-id> -n <name-space-name>
 
 kubectl get pods --namespace=<your-namespace> # You will see your pod auto-heal and recreated
 
@@ -59,4 +59,16 @@ kubectl get pods --namespace=<your-namespace> # You will see your pod auto-heal 
 kubectl delete -f deployment.yaml
 
 # Check for pods again you wont find now !
+
+# To even manage deployment we have services such as cluster-IP and node PORT,here also labels and selectors play a vital role 
+
+# Service creation converts all pods multiple IP's to a single IP
+
+kubectl apply -f service.yaml
+
+minikube service <service-name> -n <name-space> # Will get you all the URLS/Port related to that OR
+
+kubectl get svc -n <name-space> # will show services in that specified name space
+
+curl -L <url> # redirects to the url on which app is running ! 
 
