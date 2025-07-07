@@ -122,5 +122,46 @@ ls
 
 cat level.properties # now you can see the data of configMap in pod due to mounting 
 
+# for persistentVolume we will use mySQL
+
+# Kubernetes finds storage matching "mysql-data-disk"
+
+# It connects this storage to your container
+
+# MySQL writes/fetches all its data to this storage instead of temporary container storage
+
+# Even if the container dies, the data stays safe!
+
+kubectl apply -f secrets.yaml  
+
+kubectl apply -f persistentVolume.yaml
+
+kubectl get persistentVolume.yaml # will show its properties 
+
+kubectl apply -f deploymentwithPV.yaml
+
+# Finally 
+
+kubectl get pods 
+
+kubectl apply -f service-SQL.yaml 
+
+kubectl get svc # check its status
+
+kubectl get deployments # check deployment status
+
+kubectl get secrets # check if all of them are UP !
+
+minikube service service-SQL # will show its data,access URL 
+
+# first we need a client to access this sql server
+
+apt-get install mysql-client
+
+mysql -u root -p -h <your-IP-except_PORT_NUMBER> -P 30036  # enter the password followed in secret file
+
+
+
+
 
 
