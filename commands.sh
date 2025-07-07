@@ -91,3 +91,36 @@ sudo vim /etc/hosts # inside that bind
 
 curl -L http://<domain-name/url-mentioned-in-service> 
 
+# configMap starts 
+# passing data from config file to pods (using ENV variables) to reduce its memory dependency and security features as well 
+
+# create your configMap file then configure-pod file
+
+kubectl apply -f configure-pod.yaml
+
+kubectl get pods # will show your pod running too
+
+kubectl exec it <pod-name> -- /bin/sh
+
+echo $<env-name-corresponding-to-key>  # values are passed as env variables !
+
+printenv # will show your key variable defined in configMap ! then exit 
+
+# while kubectl get pods if "createConfigErrorOccurs" then delete and again create pods
+
+# further i have mounted volume to pod of configMap incase i want to pass file instead of variable
+
+kubectl apply -f configure-pod.yaml
+
+kubectl exec it <pod-name> -- /bin/sh
+
+ls # will show config path
+
+cd config 
+
+ls
+
+cat level.properties # now you can see the data of configMap in pod due to mounting 
+
+
+

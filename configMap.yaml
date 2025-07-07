@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo-config
+data:
+  level: "10"
+  level-properties-file-name: "lol.properties" # property like key maps to a single value 
+
+  # file-like keys
+  level.properties: |
+    level.types=easy,hard
+    level.maximum-level=100
