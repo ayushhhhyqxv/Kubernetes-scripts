@@ -143,5 +143,179 @@ spec:
 
 kubectl apply -f deploy.yaml
 
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.4/deploy/static/provider/cloud/deploy.yaml 
+
+# Downloading ingress controller for load balancer  !
+
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.5/cert-manager.yaml
+
+# Downloading cert manager for secure connection !
+
+kubectl get pods -A 
+
+# Note the IP of ingress controller , since we have to deploy for public 
+# Specify that IP to our domain name in Google Domain
+
+vi ingress.yaml
++------>
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: production-app
+
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: demo.kubesimplify.com  # host your domain name not IP
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-app-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - demo.kubesimplify.com
+    secretName: app
+
+# if you dont have Domain we can use
+
+demo.<ingress-controller-IP>.nip.io
+
+kubectl get crd # cert manager's cluster issuer
+
+vi cluster-issuer.yaml
++----------->
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: production-app
+spec:
+  acme:
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: demo@v1.com
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: app 
+    # Enable the HTTP-01 challenge provider
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+
+kubectl apply -f cluster-issuer.yaml
+
+vi certificate.yaml
++------------->
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: app
+spec:
+  secretName: app
+  issuerRef:
+    name: production-app
+    kind: ClusterIssuer
+  commonName: demo.kubesimplify.com
+  dnsNames:
+  - demo.kubesimplify.com
+
+kubectl apply -f certificate.yaml
+
+kubectl get certificate -oyaml  # shows true, if not check for errors using
+
+kubectl get challenges 
+
+kubectl get clusterissuer -oyaml
+
+kubectl apply -f ingress.yaml
+
+kubectl get ingress 
+
+# PVC is automatically created by postgres-cluster ! 
+
+# Now go to domain we can access the app
+
+# scaling our deployment HPA(horizontal pod autoscaler)
+
+vi horizontal.yaml
++----------->
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: my-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: my-app
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 20
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: AverageValue
+        averageValue: 350Mi
+
+kubectl apply -f horizontal.yaml
+
+# Now load testing using k6 
+
+vi load.js
++---------->
+  import http from "k6/http";
+  import { check } from "k6";
+
+
+  export const options = {
+    vus: 100,
+    duration: '30s',
+  };
+
+  const BASE_URL = 'https://demo.kubesimplify.com'
+
+  function demo() {
+    const url = `${BASE_URL}`;
+
+
+    let resp = http.get(url);
+
+    check(resp, {
+      'endpoint was successful': (resp) => {
+        if (resp.status === 200) {
+          console.log(`PASS! url`)
+          return true
+        } else {
+          console.error(`FAIL! status-code: ${resp.status}`)
+          return false
+        }
+      }
+    });
+  }
+
+  export default function () {
+      demo()
+  }
+
+k6s run load.js 
+# keep watch on pods you will see horizontal scaling as specified
+
+
+
 
 
